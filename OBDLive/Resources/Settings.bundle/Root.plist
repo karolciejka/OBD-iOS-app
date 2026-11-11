@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>FooterText</key>
-			<string>The engine speed style applies to the Simple skin. Racing and Power have their own gauges.</string>
+			<string>The engine speed style applies to the Simple skin. Racing, Power and Retro have their own gauges.</string>
 			<key>Title</key>
 			<string>Display</string>
 			<key>Type</key>
@@ -24,6 +24,7 @@
 				<string>Simple</string>
 				<string>Racing</string>
 				<string>Power</string>
+				<string>Retro</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -32,6 +33,7 @@
 				<string>Simple</string>
 				<string>Racing</string>
 				<string>Power</string>
+				<string>Retro</string>
 			</array>
 		</dict>
 		<dict>

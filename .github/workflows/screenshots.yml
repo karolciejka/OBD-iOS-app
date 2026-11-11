@@ -48,8 +48,8 @@ jobs:
             sleep "$wait"
             xcrun simctl io "$UDID" screenshot "docs/screenshots/$name.png"
           }
-          # every screen in each skin: <screen>-simple.png, <screen>-racing.png and <screen>-power.png
-          for skin in Simple Racing Power; do
+          # every screen in each skin: <screen>-simple.png, <screen>-racing.png, <screen>-power.png and <screen>-retro.png
+          for skin in Simple Racing Power Retro; do
             k=$(echo "$skin" | tr '[:upper:]' '[:lower:]')
             shot "connect-$k"  4  -autoDemo NO  -skin "$skin"
             shot "live-$k"    10  -autoDemo YES -skin "$skin" -startTab live  -demoMode Driving -rpmStyle Ring

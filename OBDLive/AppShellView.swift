@@ -56,7 +56,7 @@ struct AppShellView: View {
                     .tracking(-0.48)
             }
             Spacer(minLength: 0)
-            // skin switch, as in the design's header: Simple → Racing → Power
+            // skin switch, as in the design's header: Simple → Racing → Power → Retro
             Button { skinRaw = DS.skin.next.rawValue } label: {
                 Text(DS.skin.rawValue)
                     .font(DS.body(11))

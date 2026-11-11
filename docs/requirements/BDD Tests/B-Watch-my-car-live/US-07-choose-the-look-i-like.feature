@@ -1,7 +1,7 @@
 # Story: US-07 Choose the look I like (Done)
 Feature: Choose the look I like
   As a car owner
-  I want to switch between the Simple, Racing and Power looks
+  I want to switch between the Simple, Racing, Power and Retro looks
   So that the app suits how I use it
 
   Background:
@@ -15,8 +15,8 @@ Feature: Choose the look I like
 
   Scenario: The header switch steps through the looks
     Given the car owner is on the Live screen
-    When they tap the look switch in the header three times
-    Then the app shows the Racing look, then the Power look, then the Simple look again
+    When they tap the look switch in the header four times
+    Then the app shows the Racing look, then the Power look, then the Retro look, then the Simple look again
 
   Scenario: The chosen look is kept after closing the app
     Given the car owner has chosen the Racing look
@@ -37,3 +37,5 @@ Feature: Choose the look I like
       | Racing | dark       |
       | Power  | light      |
       | Power  | dark       |
+      | Retro  | light      |
+      | Retro  | dark       |
