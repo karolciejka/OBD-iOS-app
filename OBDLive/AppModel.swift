@@ -7,7 +7,7 @@ enum SettingsKey {
     static let units = "units"         // "Metric" | "Imperial"
     static let demoMode = "demoMode"   // "Parked" | "Driving"
     static let combinedRequests = "combinedRequests" // ask for up to 6 PIDs per OBD request
-    static let skin = "skin"           // "Simple" | "Racing" | "Power"
+    static let skin = "skin"           // "Simple" | "Racing" | "Power" | "Retro"
 
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [rpmStyle: "Ring", units: "Metric", demoMode: "Parked", combinedRequests: true, skin: "Simple"])

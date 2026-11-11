@@ -13,6 +13,7 @@ struct LiveView: View {
             switch DS.skin {
             case .racing: racingGauge
             case .power: powerGauge
+            case .retro: retroGauge
             case .simple:
                 switch rpmStyle {
                 case "Bar": rpmBar
@@ -86,6 +87,20 @@ struct LiveView: View {
                        speed: fmt.convert(.speed, model.readings[.speed] ?? 0),
                        speedText: fmt.value(.speed, model.readings[.speed]), speedUnit: fmt.unit(.speed),
                        imperial: fmt.units == .imperial, rpmColor: rpmColor)
+        }
+        .buttonStyle(FlatButtonStyle(pressed: DS.text.opacity(0.04)))
+    }
+
+    // Retro skin: 80s digital dash with seven-segment speed / gear / rpm, a rev bar, two needle
+    // gauges and warning lamps.
+    private var retroGauge: some View {
+        Button { graph(.rpm) } label: {
+            RetroGauge(rpm: rpm, speed: model.readings[.speed].map { fmt.convert(.speed, $0) },
+                       speedText: fmt.value(.speed, model.readings[.speed]), speedUnit: fmt.unit(.speed),
+                       gear: model.readings.gear, rpmText: rpmText,
+                       coolant: model.readings[.coolant],
+                       coolantText: model.readings[.coolant] == nil ? "—" : fmt.value(.coolant, model.readings[.coolant]) + fmt.unit(.coolant),
+                       volt: model.readings[.volt], milOn: !model.codes.isEmpty)
         }
         .buttonStyle(FlatButtonStyle(pressed: DS.text.opacity(0.04)))
     }
@@ -292,7 +307,8 @@ struct LiveView: View {
                         .font(DS.heading(30))
                         .tracking(-0.6)
                         .monospacedDigit()
-                        .foregroundStyle(fmt.isWarning(key, raw) ? DS.accent : DS.text)
+                        .foregroundStyle(fmt.isWarning(key, raw) ? DS.warn : DS.readout)
+                        .skinGlow()
                     Text(fmt.unit(key)).font(DS.body(13)).foregroundStyle(DS.neutral700)
                 }
             }

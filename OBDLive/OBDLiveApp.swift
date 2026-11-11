@@ -24,6 +24,7 @@ struct RootView: View {
             switch skin.palette.texture {
             case .carbon: CarbonTexture().ignoresSafeArea()
             case .power: PowerTexture().ignoresSafeArea()
+            case .scanlines: ScanlineTexture().ignoresSafeArea()
             case .none: EmptyView()
             }
             switch model.screen {

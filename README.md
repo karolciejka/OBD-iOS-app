@@ -12,7 +12,7 @@ The [Freematics ONE+](https://freematics.com/products/freematics-one-plus/) is a
 - **Bus view.** Every OBD request and reply between the logger and the car, shown live.
 - **Knows your car.** It reads the VIN and decodes model year, make and, for VW-group cars, the model. If the car won't give its VIN, the app tells you why.
 - **Works with your car's quirks.** It asks the car which readings it supports and polls only those. It sends several readings per request where the car allows it, and falls back to one at a time when it doesn't. It reconnects by itself when the logger restarts.
-- **Three looks.** *Simple*, a dark graphite design with amber accents and rounded cards, *Racing*, a carbon theme with a Type R style rev display, and *Power*, a navy theme with blue-to-red twin gauges. Switch with one tap.
+- **Four looks.** *Simple*, a dark graphite design with amber accents and rounded cards, *Racing*, a carbon theme with a Type R style rev display, *Power*, a navy theme with blue-to-red twin gauges, and *Retro*, an 80s digital dash with glowing red seven-segment readouts, a rev bar, needle gauges and warning lamps. Switch with one tap.
 - **Metric or imperial,** and a **demo mode** with simulated parked and driving data, so you can try everything without a car.
 
 | | Simple | Racing | Power |
@@ -39,7 +39,7 @@ Core logic tests (parsing, framing, simulator) run without Xcode:
 cd OBDCore && swift test
 ```
 
-The design's Tweaks panel lives in the iOS Settings app under **OBD Live**: engine-speed style for the Simple skin (Ring / Dial / Bar), units (Metric / Imperial) and the simulated car (Parked / Driving) for demo mode.
+The design's Tweaks panel lives in the iOS Settings app under **OBD Live**: skin (Simple / Racing / Power / Retro), engine-speed style for the Simple skin (Ring / Dial / Bar), units (Metric / Imperial) and the simulated car (Parked / Driving) for demo mode.
 
 ## Logger firmware
 

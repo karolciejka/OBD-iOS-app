@@ -1,17 +1,19 @@
 import SwiftUI
 
-/// The app's three looks, the skins in OBD Prototype.dc.html. All three are dark.
+/// The app's four looks, the skins in OBD Prototype.dc.html. All four are dark.
 /// Simple is the Modernist skin (graphite ground, amber accent, Barlow type, rounded cards and a pill
 /// tab bar); Racing is "Type R" (carbon ground, red accent, Saira type, Type R style rev bar); Power is
-/// a navy ground with a blue-to-red accent and twin speed / rpm gauges.
+/// a navy ground with a blue-to-red accent and twin speed / rpm gauges; Retro is an 80s digital dash
+/// (black scanline ground, glowing red seven-segment readouts, Share Tech Mono type, warning lamps).
 enum Skin: String, CaseIterable {
-    case simple = "Simple", racing = "Racing", power = "Power"
+    case simple = "Simple", racing = "Racing", power = "Power", retro = "Retro"
 
     var palette: Palette {
         switch self {
         case .simple: return .simple
         case .racing: return .racing
         case .power: return .power
+        case .retro: return .retro
         }
     }
 
@@ -20,21 +22,28 @@ enum Skin: String, CaseIterable {
 }
 
 /// Ground texture over the background (`--skin-texture`).
-enum Texture { case none, carbon, power }
+enum Texture { case none, carbon, power, scanlines }
 
 /// Colour, type and shape tokens for one skin (the design's CSS custom properties).
 struct Palette {
     let bg, surface, text, accent, divider: Color
     let neutral200, neutral300, neutral500, neutral600, neutral700, neutral800, neutral900: Color
     let accent100, accent200, accent600, accent700, accent800: Color
-    /// The 2px rule under the app header (`--skin-rule`); a gradient on Power, invisible on Simple.
+    /// The 2px rule under the app header (`--skin-rule`); a gradient on Power, invisible on Simple,
+    /// and on Retro a red line that fades out at both ends.
     let headerRule: [Color]
+    var headerRuleFades = false
     /// Rules between Live sections and cells (`--skin-sep`); nil means the divider colour.
     var separator: Color? = nil
     /// Primary action fill, pressed fill and label (`--skin-cta*`); nil means the accent.
     var cta: Color? = nil
     var ctaPressed: Color? = nil
     var ctaText: Color? = nil
+    /// Live reading values (`--skin-readout`) and out-of-range values (`--skin-warn`); nil means text / accent.
+    var readout: Color? = nil
+    var warn: Color? = nil
+    /// Glow around Live reading values (`--skin-glow`); nil means none.
+    var glow: Color? = nil
     let headingFont, headingBoldFont, headingSemiFont, bodyFont, bodyMediumFont: String
     /// Small labels on Live (`--skin-mono`); nil means the body font.
     var monoFont: String? = nil
@@ -95,6 +104,19 @@ struct Palette {
         cta: Color(hex: 0x0066B1), ctaPressed: Color(hex: 0x0F4D92), ctaText: .white,
         headingFont: "SairaCondensed-ExtraBold", headingBoldFont: "SairaCondensed-Bold", headingSemiFont: "SairaCondensed-Bold",
         bodyFont: "Saira-Regular", bodyMediumFont: "Saira-Regular", texture: .power)
+
+    /// SKINS.Retro in OBD Prototype.dc.html
+    static let retro = Palette(
+        bg: Color(hex: 0x050505), surface: Color(hex: 0x0E0E0E), text: Color(hex: 0xF3E9E4), accent: Color(hex: 0xFF2414),
+        divider: Color(hex: 0x2A1210),
+        neutral200: Color(hex: 0x161616), neutral300: Color(hex: 0x242424), neutral500: Color(hex: 0x5C5C5C), neutral600: Color(hex: 0x7D7672),
+        neutral700: Color(hex: 0xA39A95), neutral800: Color(hex: 0xD4CBC6), neutral900: Color(hex: 0x000000),
+        accent100: Color(hex: 0x2A0705), accent200: Color(hex: 0x4A0C08), accent600: Color(hex: 0xFF4A3A), accent700: Color(hex: 0xFF5A48),
+        accent800: Color(hex: 0xFFB3A8), headerRule: [Color(hex: 0xFF2414)], headerRuleFades: true,
+        cta: Color(hex: 0xFF2414), ctaPressed: Color(hex: 0xC81A0E), ctaText: Color(hex: 0x050505),
+        readout: Color(hex: 0xFF3B2A), warn: Color(hex: 0xFFB000), glow: Color(hex: 0xFF2414),
+        headingFont: "ShareTechMono-Regular", headingBoldFont: "ShareTechMono-Regular", headingSemiFont: "ShareTechMono-Regular",
+        bodyFont: "ShareTechMono-Regular", bodyMediumFont: "ShareTechMono-Regular", texture: .scanlines)
 }
 
 /// Design tokens of the active skin. RootView sets `skin` and rebuilds the view tree when it changes,
@@ -129,10 +151,19 @@ enum DS {
     static var cta: Color { p.cta ?? p.accent }
     static var ctaPressed: Color { p.ctaPressed ?? p.accent700 }
     static var ctaText: Color { p.ctaText ?? p.bg }
+    static var readout: Color { p.readout ?? p.text }
+    static var warn: Color { p.warn ?? p.accent }
 
-    /// The header rule: one colour, or the Power skin's left-to-right gradient (stops at 0, 30, 58, 88 %).
+    /// The header rule: one colour, the Power skin's left-to-right gradient (stops at 0, 30, 58, 88 %),
+    /// or Retro's red line faded out over the outer 18 % at each end.
     static var headerRule: AnyShapeStyle {
         let c = p.headerRule
+        if p.headerRuleFades, let red = c.first {
+            return AnyShapeStyle(LinearGradient(stops: [
+                .init(color: red.opacity(0), location: 0), .init(color: red, location: 0.18),
+                .init(color: red, location: 0.82), .init(color: red.opacity(0), location: 1),
+            ], startPoint: .leading, endPoint: .trailing))
+        }
         if c.count == 4 {
             return AnyShapeStyle(LinearGradient(stops: [
                 .init(color: c[0], location: 0), .init(color: c[1], location: 0.3),
@@ -181,6 +212,22 @@ struct PowerTexture: View {
             glow.fill(Path(ellipseIn: CGRect(x: -rx, y: -rx, width: rx * 2, height: rx * 2)),
                       with: .radialGradient(Gradient(colors: [Color(hex: 0x0066B1).opacity(0.24), Color(hex: 0x0066B1).opacity(0)]),
                                             center: .zero, startRadius: 0, endRadius: rx * 0.62))
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+/// The Retro skin's CRT scanlines: a 1px horizontal line every 3px in 2.8% white.
+struct ScanlineTexture: View {
+    var body: some View {
+        Canvas { ctx, size in
+            var lines = Path()
+            var y: CGFloat = 0
+            while y < size.height {
+                lines.addRect(CGRect(x: 0, y: y, width: size.width, height: 1))
+                y += 3
+            }
+            ctx.fill(lines, with: .color(.white.opacity(0.028)))
         }
         .allowsHitTesting(false)
     }
@@ -301,5 +348,16 @@ struct Tag: View {
             .padding(.horizontal, 10)
             .background(background)
             .foregroundStyle(foreground)
+    }
+}
+
+extension View {
+    /// `--skin-glow`: on Retro, readouts glow like a lit display (`0 0 6px` at 75 % and `0 0 14px` at 35 %).
+    @ViewBuilder func skinGlow() -> some View {
+        if let glow = DS.p.glow {
+            shadow(color: glow.opacity(0.75), radius: 3).shadow(color: glow.opacity(0.35), radius: 7)
+        } else {
+            self
+        }
     }
 }
